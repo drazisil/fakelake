@@ -27,7 +27,7 @@ def main():
         user, ZENDESK_API_TOKEN))
     ticket_comments = json.loads(response.text)
 
-    with open('output.csv', 'w') as output:
+    with open('data/zendesk/zendesk_output.csv', 'w') as output:
         csvwriter = csv.writer(output)
         csvwriter.writerow(
             ['id', 'type', 'author_id', 'html_body', 'public?', "created_at", 'event_type'])
