@@ -17,16 +17,12 @@ def generateDiscourseUrl(base_url, report_name, start_date, end_date, username, 
     return "{}/admin/reports/{}.json?end_date={}&start_date={}&api_key={}&api_username={}".format(base_url, report_name, end_date, start_date, api_token, username)
 
 
-def main():
-    from datetime import datetime, timedelta
-
+def fetchAcceptedSolutions(base_url, start_date, end_date, username, token):
     report_name = 'accepted_solutions'
-    end_date = (datetime.today() - timedelta(days=1)).date().isoformat()
-    start_date = (datetime.today() - timedelta(days=31)).date().isoformat()
     print("Fetching {} from {} to {}...".format(
         report_name, start_date, end_date))
     url = generateDiscourseUrl(
-        DISCOURSE_URL, report_name, start_date, end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
+        base_url, report_name, start_date, end_date, username, token)
     response = requests.get(url)
     report_data = json.loads(response.text)['report']
 
@@ -36,6 +32,36 @@ def main():
             ['date', 'count'])
         for item in report_data['data']:
             csvwriter.writerow([item['x'], item['y']])
+
+
+def fetchPosts(base_url, start_date, end_date, username, token):
+    report_name = 'posts'
+    print("Fetching {} from {} to {}...".format(
+        report_name, start_date, end_date))
+    url = generateDiscourseUrl(
+        base_url, report_name, start_date, end_date, username, token)
+    response = requests.get(url)
+    report_data = json.loads(response.text)['report']
+
+    with open('data/discourse/discourse_posts.csv', 'w') as output:
+        csvwriter = csv.writer(output)
+        csvwriter.writerow(
+            ['date', 'count'])
+        for item in report_data['data']:
+            csvwriter.writerow([item['x'], item['y']])
+
+
+def main():
+    from datetime import datetime, timedelta
+
+    end_date = (datetime.today() - timedelta(days=1)).date().isoformat()
+    start_date = (datetime.today() - timedelta(days=31)).date().isoformat()
+
+    fetchAcceptedSolutions(DISCOURSE_URL, start_date,
+                           end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
+
+    fetchPosts(DISCOURSE_URL, start_date,
+               end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
 
 
 if __name__ == '__main__':
