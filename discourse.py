@@ -51,6 +51,23 @@ def fetchPosts(base_url, start_date, end_date, username, token):
             csvwriter.writerow([item['x'], item['y']])
 
 
+def fetchTimeToFirstResponse(base_url, start_date, end_date, username, token):
+    report_name = 'time_to_first_response'
+    print("Fetching {} from {} to {}...".format(
+        report_name, start_date, end_date))
+    url = generateDiscourseUrl(
+        base_url, report_name, start_date, end_date, username, token)
+    response = requests.get(url)
+    report_data = json.loads(response.text)['report']
+
+    with open('data/discourse/discourse_time_to_first_response.csv', 'w') as output:
+        csvwriter = csv.writer(output)
+        csvwriter.writerow(
+            ['date', 'hours_to_first_response'])
+        for item in report_data['data']:
+            csvwriter.writerow([item['x'], item['y']])
+
+
 def main():
     from datetime import datetime, timedelta
 
@@ -62,6 +79,9 @@ def main():
 
     fetchPosts(DISCOURSE_URL, start_date,
                end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
+
+    fetchTimeToFirstResponse(DISCOURSE_URL, start_date,
+                             end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
 
 
 if __name__ == '__main__':
