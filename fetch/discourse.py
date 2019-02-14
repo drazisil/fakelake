@@ -5,7 +5,12 @@ import json
 import os
 import requests
 import sys
+
+print(os.getcwd())
+
 load_dotenv()
+
+DATA_PATH = os.getenv("DATA_PATH")
 
 DISCOURSE_URL = os.getenv("DISCOURSE_URL")
 DISCOURSE_USERNAME = os.getenv("DISCOURSE_USERNAME")
@@ -22,6 +27,20 @@ def generate_discourse_report_url(base_url, report_name, start_date, end_date, u
     return "{}/admin/reports/{}.json?end_date={}&start_date={}&api_key={}&api_username={}".format(base_url, report_name, end_date, start_date, api_token, username)
 
 
+def write_data_as_json(report_name, data):
+    with open('data/discourse/discourse_{}.json'.format(report_name), 'w') as f:
+        f.write(data)
+
+
+def write_data_as_csv(report_name, data, headers):
+    with open('data/discourse/discourse_{}.csv'.format(report_name), 'w') as output:
+        csvwriter = csv.writer(output)
+        csvwriter.writerow(
+            headers)
+        for item in data['data']:
+            csvwriter.writerow([item['x'], item['y']])
+
+
 def fetch_report_from_discourse(report_name, headers, base_url, start_date, end_date, username, token):
     print("Fetching {} from {} to {}...".format(
         report_name, start_date, end_date))
@@ -30,15 +49,9 @@ def fetch_report_from_discourse(report_name, headers, base_url, start_date, end_
     response = requests.get(url)
     report_data = json.loads(response.text)['report']
 
-    with open('data/discourse/discourse_{}.json'.format(report_name), 'w') as f:
-        f.write(response.text)
+    write_data_as_json(report_name, response.text)
 
-    with open('data/discourse/discourse_{}.csv'.format(report_name), 'w') as output:
-        csvwriter = csv.writer(output)
-        csvwriter.writerow(
-            headers)
-        for item in report_data['data']:
-            csvwriter.writerow([item['x'], item['y']])
+    write_data_as_csv(report_name, report_data, headers)
 
 
 def main():
