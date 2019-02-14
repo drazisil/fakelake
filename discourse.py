@@ -30,6 +30,9 @@ def fetch_report_from_discourse(report_name, headers, base_url, start_date, end_
     response = requests.get(url)
     report_data = json.loads(response.text)['report']
 
+    with open('data/discourse/discourse_{}.json'.format(report_name), 'w') as f:
+        f.write(response.text)
+
     with open('data/discourse/discourse_{}.csv'.format(report_name), 'w') as output:
         csvwriter = csv.writer(output)
         csvwriter.writerow(
