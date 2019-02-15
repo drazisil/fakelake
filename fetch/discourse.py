@@ -49,9 +49,11 @@ def fetch_report_from_discourse(report_name, headers, base_url, start_date, end_
     response = requests.get(url)
     report_data = json.loads(response.text)['report']
 
-    write_data_as_json(report_name, response.text)
+    write_data_as_json('{}_{}_{}'.format(
+        report_name, start_date, end_date), response.text)
 
-    write_data_as_csv(report_name, report_data, headers)
+    write_data_as_csv('{}_{}_{}'.format(
+        report_name, start_date, end_date), report_data, headers)
 
 
 def main():
