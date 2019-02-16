@@ -1,5 +1,7 @@
 *.pyc
 .env
+.cov
 data/**/*.csv
 data/**/*.json
 __pycache__
+htmlcov
