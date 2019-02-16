@@ -48,7 +48,7 @@ jobs:
           name: run test coverage
           command: |
             . venv/bin/activate
-            coverage run --source ./fetch fetch/discourse.py
+            coverage run --source ./fetch fetch/test_discourse.py
 
           name: run test report
           command: |
