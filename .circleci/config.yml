@@ -55,6 +55,6 @@ jobs:
             . venv/bin/activate
             coverage html
 
-        - store_artifacts:
+      - store_artifacts:
           path: htmlcov
           destination: htmlcov
