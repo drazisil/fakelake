@@ -48,6 +48,7 @@ jobs:
           name: run test coverage
           command: |
             . venv/bin/activate
+            mkdir -p test-reports/junit
             coverage run --source ./fetch fetch/test_discourse.py
       - run:
           name: run test report
@@ -58,3 +59,9 @@ jobs:
       - store_artifacts:
           path: htmlcov
           destination: htmlcov
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+      - store_test_results
