@@ -49,7 +49,7 @@ jobs:
           command: |
             . venv/bin/activate
             coverage run --source ./fetch fetch/test_discourse.py
-
+      - run:
           name: run test report
           command: |
             . venv/bin/activate
