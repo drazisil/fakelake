@@ -45,12 +45,16 @@ jobs:
       # https://pytest.org
       # https://nose.readthedocs.io
       - run:
-          name: run tests
+          name: run test coverage
           command: |
             . venv/bin/activate
             coverage run --source ./fetch fetch/discourse.py
+
+          name: run test report
+          command: |
+            . venv/bin/activate
             coverage html
 
-      - store_artifacts:
+            - store_artifacts:
           path: htmlcov
           destination: htmlcov
