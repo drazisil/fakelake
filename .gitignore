@@ -1,6 +1,6 @@
 *.pyc
 .env
-.cov
+.coverage
 data/**/*.csv
 data/**/*.json
 __pycache__
