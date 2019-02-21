@@ -32,28 +32,15 @@ def write_data_as_json(report_name, data):
         f.write(data)
 
 
-def write_data_as_csv(report_name, data, headers):
-    with open('data/discourse/discourse_{}.csv'.format(report_name), 'w') as output:
-        csvwriter = csv.writer(output)
-        csvwriter.writerow(
-            headers)
-        for item in data['data']:
-            csvwriter.writerow([item['x'], item['y']])
-
-
 def fetch_report_from_discourse(report_name, headers, base_url, start_date, end_date, username, token):
     print("Fetching {} from {} to {}...".format(
         report_name, start_date, end_date))
     url = generate_discourse_report_url(
         base_url, report_name, start_date, end_date, username, token)
     response = requests.get(url)
-    report_data = json.loads(response.text)['report']
 
     write_data_as_json('{}_{}_{}'.format(
         report_name, start_date, end_date), response.text)
-
-    write_data_as_csv('{}_{}_{}'.format(
-        report_name, start_date, end_date), report_data, headers)
 
 
 def main():
