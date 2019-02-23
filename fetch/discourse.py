@@ -28,8 +28,11 @@ def generate_discourse_report_url(base_url, report_name, start_date, end_date, u
 
 
 def write_data_as_json(report_name, data):
-    with open('data/discourse/discourse_{}.json'.format(report_name), 'w') as f:
-        f.write(data)
+    try:
+        with open('data/discourse/discourse_{}.json'.format(report_name), 'x') as f:
+            f.write(data)
+    except FileExistsError:
+        print('Skipping the saving of {}, file already exists'.format(report_name))
 
 
 def fetch_range_report_from_discourse(report_name, base_url, start_date, end_date, username, token):

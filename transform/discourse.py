@@ -40,14 +40,17 @@ def write_data_as_csv(start_date, end_date, report_name, data, headers):
     for date in missing_data:
         full_data[date] = missing_data[date]
 
-    with open('data/discourse/discourse_{}.csv'.format(report_name), 'w') as output:
-        csvwriter = csv.writer(output)
-        csvwriter.writerow(
-            headers)
+    try:
+        with open('data/discourse/discourse_{}.csv'.format(report_name), 'x') as output:
+            csvwriter = csv.writer(output)
+            csvwriter.writerow(
+                headers)
 
-        # write the csv
-        for item in full_data:
-            csvwriter.writerow([item, full_data[item]])
+            # write the csv
+            for item in full_data:
+                csvwriter.writerow([item, full_data[item]])
+    except FileExistsError:
+        print('Skipping the saving of {}, file already exists'.format(report_name))
 
 
 def main():
