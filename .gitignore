@@ -1,8 +1,10 @@
 *.pyc
 .env
 .coverage
+credentials.json
 data/**/*.csv
 data/**/*.json
 __pycache__
 htmlcov
 test-reports
+token.pickle
