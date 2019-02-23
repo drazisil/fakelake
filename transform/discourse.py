@@ -5,10 +5,10 @@ import json
 import sys
 import numpy as np
 import pandas as pd
+from datetime import datetime, timedelta
 
 
 def days_ago(number_of_days):
-    from datetime import datetime, timedelta
     return (datetime.today() - timedelta(days=number_of_days)).date().isoformat()
 
 
@@ -25,10 +25,10 @@ def write_data_as_csv(start_date, end_date, report_name, data, headers):
     missing_data = missing_data['date']
 
     # generate the time series
-    start = datetime.datetime.strptime(start_date, "%Y-%m-%d")
-    end = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    start = datetime.strptime(start_date, "%Y-%m-%d")
+    end = datetime.strptime(end_date, "%Y-%m-%d")
     date_array = \
-        (start + datetime.timedelta(days=x)
+        (start + timedelta(days=x)
          for x in range(0, (end-start).days))
 
     # populate the clean data with the time series
@@ -52,20 +52,31 @@ def write_data_as_csv(start_date, end_date, report_name, data, headers):
 
 def main():
 
-    report_names = ['posts', 'accepted_solutions', 'time_to_first_response']
+    report_names = ['posts', 'accepted_solutions',
+                    'time_to_first_response', 'daily_engaged_users', 'dau_by_mau']
 
     end_date = days_ago(1)
     start_date = days_ago(31)
+    today = datetime.today().strftime("%Y-%m-%d")
 
     for report_name in report_names:
-        print("Trasforming {} from {} to {} from JSON to CSV...".format(
+        print("Transforming {} from {} to {} from JSON to CSV...".format(
             report_name, start_date, end_date))
-        with open('data/discourse/discourse_{}_{}_{}.json'.format(
-                report_name, start_date, end_date), 'r') as input:
+        with open('data/discourse/discourse_{}_{}_{}_{}.json'.format(
+                report_name, 'range', start_date, end_date), 'r') as input:
             report_data = json.loads(input.read())['report']
 
-            write_data_as_csv(start_date, end_date, '{}_{}_{}'.format(
-                report_name, start_date, end_date), report_data, ['date', 'count'])
+            write_data_as_csv(start_date, end_date, '{}_{}_{}_{}'.format(
+                report_name, 'range', start_date, end_date), report_data, ['date', 'count'])
+
+        print("Transforming daily {} for {} from JSON to CSV...".format(
+            report_name, today))
+        with open('data/discourse/discourse_{}_{}_{}.json'.format(
+                report_name, 'daily', today), 'r') as input:
+            report_data = json.loads(input.read())['report']
+
+            write_data_as_csv(today, today, '{}_{}_{}'.format(
+                report_name, 'daily', today), report_data, ['date', 'count'])
 
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ import json
 import os
 import requests
 import sys
+from datetime import datetime, timedelta
 
 print(os.getcwd())
 
@@ -18,7 +19,6 @@ DISCOURSE_API_TOKEN = os.getenv("DISCOURSE_API_TOKEN")
 
 
 def days_ago(number_of_days):
-    from datetime import datetime, timedelta
     return (datetime.today() - timedelta(days=number_of_days)).date().isoformat()
 
 
@@ -32,15 +32,27 @@ def write_data_as_json(report_name, data):
         f.write(data)
 
 
-def fetch_report_from_discourse(report_name, headers, base_url, start_date, end_date, username, token):
+def fetch_range_report_from_discourse(report_name, base_url, start_date, end_date, username, token):
     print("Fetching {} from {} to {}...".format(
         report_name, start_date, end_date))
     url = generate_discourse_report_url(
         base_url, report_name, start_date, end_date, username, token)
     response = requests.get(url)
 
+    write_data_as_json('{}_{}_{}_{}'.format(
+        report_name, 'range', start_date, end_date), response.text)
+
+
+def fetch_daily_report_from_discourse(report_name, base_url, username, token):
+    today = datetime.today().strftime("%Y-%m-%d")
+    print("Fetching daily report {} for {}...".format(
+        report_name, today))
+    url = generate_discourse_report_url(
+        base_url, report_name, today, today, username, token)
+    response = requests.get(url)
+
     write_data_as_json('{}_{}_{}'.format(
-        report_name, start_date, end_date), response.text)
+        report_name, 'daily', today), response.text)
 
 
 def main():
@@ -48,14 +60,16 @@ def main():
     end_date = days_ago(1)
     start_date = days_ago(31)
 
-    fetch_report_from_discourse('posts', ['date', 'count'], DISCOURSE_URL, start_date,
-                                end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
+    reports = ['posts', 'accepted_solutions',
+               'time_to_first_response', 'daily_engaged_users', 'dau_by_mau']
 
-    fetch_report_from_discourse('accepted_solutions', ['date', 'count'], DISCOURSE_URL, start_date,
-                                end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
+    for report in reports:
 
-    fetch_report_from_discourse('time_to_first_response', ['date', 'hours_to_first_response'], DISCOURSE_URL, start_date,
-                                end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
+        fetch_range_report_from_discourse(report, DISCOURSE_URL, start_date,
+                                          end_date, DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
+
+        fetch_daily_report_from_discourse(report, DISCOURSE_URL,
+                                          DISCOURSE_USERNAME, DISCOURSE_API_TOKEN)
 
 
 if __name__ == '__main__':
