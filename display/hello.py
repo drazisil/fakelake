@@ -17,8 +17,8 @@ fig_height = fig_size[1]
 fig_width = 10 * len(df['date'])
 # fig_size[0] = fig_width
 # fig_size[1] = fig_height * 2
-fig_size[0] = 50
-fig_size[1] = 6
+fig_size[0] = 50.0
+fig_size[1] = 6.0
 plt.rcParams["figure.figsize"] = fig_size
 
 # objects = ('Python', 'C++', 'Java', 'Perl', 'Scala', 'Lisp')
