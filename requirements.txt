@@ -1,6 +1,6 @@
 appnope==0.1.0
 astroid==2.1.0
-attrs==18.2.0
+attrs==19.3.0
 autopep8==1.4.3
 backcall==0.1.0
 beautifulsoup4==4.7.1
